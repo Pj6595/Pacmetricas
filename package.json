@@ -1,7 +1,7 @@
 {
   "name": "com.sussymama.pacma-telemetry",
   "displayName": "SUSSY TELEMETRY",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Paquete de telemetría para videojuegos en unity que totalmente no son el pacma",
   "dependencies": { },
   "keywords": [
