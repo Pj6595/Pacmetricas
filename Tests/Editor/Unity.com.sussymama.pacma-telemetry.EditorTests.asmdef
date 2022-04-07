@@ -1,7 +1,7 @@
 {
   "name": "Unity.com.sussymama.pacma-telemetry.Editor.Tests",
   "references": [
-    "Unity.com.{{COMPANY}}.{{REPOSITORY_NAME}}"
+    "Unity.com.sussymama.pacma-telemetry"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"
