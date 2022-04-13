@@ -5,21 +5,32 @@ namespace Pacmetricas_G01{
 	public class Telemetry : MonoBehaviour{
 
 		//Singleton pattern
-		private static Telemetry _instance;
+		private static Telemetry instance = null;
+		private Telemetry() {} //esto lo tiene asi guille en sus apuntes
+
 		private FilePersistance persistance;
 		private bool telemetryActive = false;
 
-		public static Telemetry GetInstance { get { return _instance; } }
+		//esto lo tiene asi guille en sus apuntes
+		//no se si es necesario con el awake
+		public static Telemetry GetInstance { 
+			get {
+				if(instance == null) {
+					instance = new Singleton();
+				}
+				return instance;
+			}
+		}
 		
 		private void Awake()
 		{
-			if (_instance != null)
+			if (instance != null)
 			{
 				Destroy(this.gameObject);
 			}
 			else
 			{
-				_instance = this;
+				instance = this;
 			}
 		}
 		
