@@ -34,7 +34,7 @@ namespace Pacmetricas_G01{
 		}
 
 		public void End(){
-			telemetryActive = true;
+			telemetryActive = false;
 		}
 
 		private void Update(){
