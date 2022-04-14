@@ -1,15 +1,10 @@
 using UnityEngine;
 
 namespace Pacmetricas_G01{
-	
-	public enum eventType{INIT_GAME, MENU_PASSED, FIRST_PHRASE, CORRECT_DIR, INIT_RUN, PLAYER_DEAD, 
-							TRY_PHRASE_MENU, TRY_PHRASE_TAXI, TRY_PHRASE_BLACKOUT,
-							VOLUME_MIC, BLACKOUT_INTENSITY}
-
 	public abstract class Event{
 		public long gameSession;
 		public double timeStamp;
-		public eventType type;
+		public string type;
 
 		public Event(){
 			gameSession = UnityEngine.Analytics.AnalyticsSessionInfo.sessionId;
@@ -37,14 +32,14 @@ namespace Pacmetricas_G01{
 	public class InitGameEvent: TimeStampEvent{
 		
 		public InitGameEvent(){
-			type = eventType.INIT_GAME;
+			type = "INIT_GAME";
 		}
 	}
 
 	public class MenuPassedEvent: TimeStampEvent{
 		
 		public MenuPassedEvent(){
-			type = eventType.MENU_PASSED;
+			type = "MENU_PASSED";
 		}
 
 	}
@@ -52,28 +47,28 @@ namespace Pacmetricas_G01{
 	public class FirstPhraseEvent: TimeStampEvent{
 		
 		public FirstPhraseEvent(){
-			type = eventType.FIRST_PHRASE;
+			type = "FIRST_PHRASE";
 		}
 	}
 
 	public class CorrectDirectionEvent: TimeStampEvent{
 		
 		public CorrectDirectionEvent(){
-			type = eventType.CORRECT_DIR;
+			type = "CORRECT_DIR";
 		}
 	}
 
 	public class InitRunEvent: TimeStampEvent{
 		
 		public InitRunEvent(){
-			type = eventType.INIT_RUN;
+			type = "INIT_RUN";
 		}
 	}
 
 	public class PlayerDeadEvent: TimeStampEvent{
 		
 		public PlayerDeadEvent(){
-			type = eventType.PLAYER_DEAD;
+			type = "PLAYER_DEAD";
 		}
 	}
 
@@ -95,12 +90,12 @@ namespace Pacmetricas_G01{
 	public class PhraseMenuEvent: PhraseEvent{
 		
 		public PhraseMenuEvent(){
-			type = eventType.TRY_PHRASE_MENU;
+			type = "TRY_PHRASE_MENU";
 			phrase = "";
 		}
 
 		public PhraseMenuEvent(string tryphrase){
-			type = eventType.TRY_PHRASE_MENU;
+			type = "TRY_PHRASE_MENU";
 			phrase = tryphrase;
 		}
 	}
@@ -109,26 +104,24 @@ namespace Pacmetricas_G01{
 	public class PhraseTaxiEvent: PhraseEvent{
 		
 		public PhraseTaxiEvent(){
-			type = eventType.TRY_PHRASE_TAXI;
+			type = "TRY_PHRASE_TAXI";
 			phrase = "";
 		}
 
 		public PhraseTaxiEvent(string tryphrase){
-			type = eventType.TRY_PHRASE_TAXI;
+			type = "TRY_PHRASE_TAXI";
 			phrase = tryphrase;
 		}
 	}
 
 	public class PhraseBlackoutEvent: PhraseEvent{
-		
-		public string phrase;
 		public PhraseBlackoutEvent(){
-			type = eventType.TRY_PHRASE_BLACKOUT;
+			type = "TRY_PHRASE_BLACKOUT";
 			phrase = "";
 		}
 
 		public PhraseBlackoutEvent(string tryphrase){
-			type = eventType.TRY_PHRASE_BLACKOUT;
+			type = "TRY_PHRASE_BLACKOUT";
 			phrase = tryphrase;
 		}
 	}
@@ -151,12 +144,12 @@ namespace Pacmetricas_G01{
 	public class MicrophoneVolume: ValueEvent{
 		
 		public MicrophoneVolume(){
-			type = eventType.VOLUME_MIC;
+			type = "VOLUME_MIC";
 			value = -1.0f; //Usamos -1 como valor por defecto para saber si es erroneo
 		}
 
 		public MicrophoneVolume(float micValue){
-			type = eventType.VOLUME_MIC;
+			type = "VOLUME_MIC";
 			value = micValue;
 		}
 	}
@@ -164,12 +157,12 @@ namespace Pacmetricas_G01{
 	public class BlackoutIntensityVolume: ValueEvent{
 		
 		public BlackoutIntensityVolume(){
-			type = eventType.BLACKOUT_INTENSITY;
+			type = "BLACKOUT_INTENSITY";
 			value = -1.0f; //Usamos -1 como valor por defecto para saber si es erroneo
 		}
 
 		public BlackoutIntensityVolume(float blackoutIntensity){
-			type = eventType.BLACKOUT_INTENSITY;
+			type = "BLACKOUT_INTENSITY";
 			value = blackoutIntensity;
 		}
 	}

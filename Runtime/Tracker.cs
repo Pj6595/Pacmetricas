@@ -19,6 +19,8 @@ namespace Pacmetricas_G01
 
         public void Init()
         {
+            activeTrackers = new List<ITrackerAsset>();
+            persistences = new List<IPersistence>();
             telemetryActive = true;
             activeTrackers.Add(new TrackerAsset());
             //TO DO: poner  los persistence en un array y el serializazer tambien (luego podremos modificar desde el editor cual queremomos
