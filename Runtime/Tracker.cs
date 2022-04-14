@@ -1,10 +1,9 @@
-using UnityEngine;
 using System.Collections.Generic;
 
 namespace Pacmetricas_G01
 {
 
-    public class Tracker : MonoBehaviour
+    public class Tracker
     {
         private static Tracker instance = null;
         private Tracker() { }
@@ -13,24 +12,9 @@ namespace Pacmetricas_G01
         private List<ITrackerAsset> activeTrackers;
         public static Tracker GetInstance()
         {
+            if (instance == null)
+                instance = new Tracker();
             return instance;
-        }
-
-        private void Awake()
-        {
-            if (instance != null)
-            {
-                Destroy(this.gameObject);
-            }
-            else
-            {
-                instance = this;
-            }
-        }
-
-        private void Start()
-        {
-            Init();
         }
 
         public void Init()
@@ -44,11 +28,6 @@ namespace Pacmetricas_G01
         public void End()
         {
             telemetryActive = false;
-        }
-
-        private void Update()
-        {
-            //Hacer flush periodico ¿?¿?¿
         }
 
         public void TrackEvent(Event e)
