@@ -1,11 +1,12 @@
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Pacmetricas_G01{
 	
 	public abstract class IPersistence{
-		private Queue<Event> eventList = new Queue<Event>(20);
-		public ISerializer serializer { get; }
+		protected Queue<Event> eventList = new Queue<Event>(20);
+		public ISerializer serializer { get; set; }
 
 		public abstract void SendEvent(Event trackerEvent);
 		public abstract void Flush(); //asincrona
@@ -18,7 +19,7 @@ namespace Pacmetricas_G01{
 		}
 
 		public override void SendEvent(Event trackerEvent){
-			eventList.Add(trackerEvent);
+			eventList.Enqueue(trackerEvent);
 			//TO DO: hacer bien lmao
 			if(eventList.Count >= 2) Flush();
 		}
@@ -27,10 +28,10 @@ namespace Pacmetricas_G01{
 			string buffer = "";
 			long gameSession;
 
-			if(eventList.Empty()) return; //Si no hay eventos en la lista, no hace flush
+			if(eventList.Count == 0) return; //Si no hay eventos en la lista, no hace flush
 			else gameSession = eventList.Peek().gameSession;
 
-			while(!eventList.Empty()) {
+			while(eventList.Count != 0) {
 				Event e = eventList.Dequeue();
 				buffer += serializer.Serialize(e);
 			}
@@ -43,7 +44,7 @@ namespace Pacmetricas_G01{
 			path = Application.persistentDataPath + "/Metricas";
 #endif
 
-			if(!Directory.Exist(path)) Directory.CreateDirectory(path);
+			if(!Directory.Exists(path)) Directory.CreateDirectory(path);
 
 			path += "/gs_" + gameSession + serializer.GetSerializationFormat();
 
