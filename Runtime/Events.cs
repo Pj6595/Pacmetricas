@@ -1,14 +1,14 @@
+using System;
 using UnityEngine;
-
 namespace Pacmetricas_G01{
 	public abstract class Event{
 		public long gameSession;
-		public double timeStamp;
+		public long timeStamp;
 		public string type;
 
 		public Event(){
 			gameSession = UnityEngine.Analytics.AnalyticsSessionInfo.sessionId;
-			timeStamp =  Time.realtimeSinceStartupAsDouble;
+			timeStamp =  ((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds();
 		}
 
 		public abstract string ToJSON();
@@ -25,7 +25,7 @@ namespace Pacmetricas_G01{
 		}
 
 		public override string ToCSV(){
-			return type + "," + timeStamp + "," + gameSession + "\n";
+			return type + "," + timeStamp + "," + gameSession + ",,\n";
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace Pacmetricas_G01{
 		}
 
 		public override string ToCSV(){
-			return type + "," + timeStamp + "," + gameSession + "," + phrase + "\n";
+			return type + "," + timeStamp + "," + gameSession + "," + phrase + ",\n";
 		}
 	}
 
@@ -137,7 +137,7 @@ namespace Pacmetricas_G01{
 		}
 
 		public override string ToCSV(){
-			return type + "," + timeStamp + "," + gameSession + "," + value  + "\n";
+			return type + "," + timeStamp + "," + gameSession + ",," + value  + "\n";
 		}
 	}
 

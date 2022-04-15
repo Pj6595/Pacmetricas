@@ -25,7 +25,6 @@ namespace Pacmetricas_G01{
 		}
 		
 		public override void Flush() {
-			string buffer = "";
 			long gameSession;
 
 			if(eventList.Count == 0) return; //Si no hay eventos en la lista, no hace flush
@@ -33,8 +32,10 @@ namespace Pacmetricas_G01{
 
 			while(eventList.Count != 0) {
 				Event e = eventList.Dequeue();
-				buffer += serializer.Serialize(e);
+				serializer.SerializeEvent(e);
 			}
+
+			string buffer = serializer.GetSerialization();
 
 			//Ruta en la que guardamos el archivo
 			string path;
