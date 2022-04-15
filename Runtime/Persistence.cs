@@ -6,22 +6,52 @@ namespace Pacmetricas_G01{
 	
 	public abstract class IPersistence{
 		protected Queue<Event> eventList = new Queue<Event>(20);
+		protected bool running = true;
+
 		public ISerializer serializer { get; set; }
 
 		public abstract void SendEvent(Event trackerEvent);
+
+		public abstract void Run();
+
+		public void Stop()
+        {
+			running = false;
+        }
+
 		public abstract void Flush(); //asincrona
 	}
 
 	public class FilePersistence: IPersistence
 	{
+		private string path;
+
 		public FilePersistence(ISerializer currSerializer){
 			serializer = currSerializer;
+#if UNITY_EDITOR
+			path = Application.dataPath + "/Metricas";
+#else
+			path = Application.persistentDataPath + "/Metricas";
+#endif
+			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 		}
 
 		public override void SendEvent(Event trackerEvent){
-			eventList.Enqueue(trackerEvent);
-			//TO DO: hacer bien lmao
-			if(eventList.Count >= 2) Flush();
+            lock (eventList)
+            {
+				eventList.Enqueue(trackerEvent);
+			}
+		}
+
+		public override void Run()
+        {
+            while (running){
+				lock (eventList)
+				{
+					//TO DO: hacer bien lmao
+					if (eventList.Count >= 1) Flush();
+				}
+			}
 		}
 		
 		public override void Flush() {
@@ -36,30 +66,18 @@ namespace Pacmetricas_G01{
 			}
 
 			string buffer = serializer.GetSerialization();
-
-			//Ruta en la que guardamos el archivo
-			string path;
-#if UNITY_EDITOR 
-			path = Application.dataPath + "/Metricas"; 
-#else
-			path = Application.persistentDataPath + "/Metricas";
-#endif
-
-			if(!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-			path += "/gs_" + gameSession + serializer.GetSerializationFormat();
+			string filePath = path + "/gs_" + gameSession + serializer.GetSerializationFormat();
 
 			FileStream fs;
-			if(File.Exists(path))
-				fs = File.Open(path, FileMode.Append);
+			if(File.Exists(filePath))
+				fs = File.Open(filePath, FileMode.Truncate);
 			else 
-				fs = File.Open(path, FileMode.Create);
+				fs = File.Open(filePath, FileMode.Create);
 
 			//Escritura en archivo
 			StreamWriter sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
     		sw.WriteLine(buffer);
    			sw.Close();
-			
 		}
 	}
 
@@ -70,7 +88,12 @@ namespace Pacmetricas_G01{
 			serializer = currSerializer;
 		}
 
-		public override void SendEvent(Event trackerEvent){
+        public override void Run()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SendEvent(Event trackerEvent){
 
 		}
 		public override void Flush(){

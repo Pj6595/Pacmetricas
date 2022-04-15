@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System;
+using System.Threading;
 using UnityEngine;
 
 namespace Pacmetricas_G01
@@ -28,6 +28,9 @@ namespace Pacmetricas_G01
         private List<IPersistence> persistences;
         private bool telemetryActive = false;
         private List<ITrackerAsset> activeTrackers;
+
+        List<Thread> persistenceThreads = new List<Thread>();
+
         public static Tracker GetInstance()
         {
             return instance;
@@ -75,15 +78,23 @@ namespace Pacmetricas_G01
                         break;
                 }
                 persistences.Add(persistence);
-            }
-            telemetryActive = true;
-            activeTrackers.Add(new TrackerAsset());
 
+                Thread persistenceThread = new Thread(persistence.Run);
+                persistenceThreads.Add(persistenceThread);
+                persistenceThread.Start();
+            }
+            
+            activeTrackers.Add(new TrackerAsset());
+            telemetryActive = true;
         }
 
         public void End()
         {
             telemetryActive = false;
+            foreach (IPersistence p in persistences) p.Stop();
+            foreach (Thread t in persistenceThreads) {
+                Debug.Log("joineado");
+                t.Join(); }
         }
 
         public void TrackEvent(Event e)
