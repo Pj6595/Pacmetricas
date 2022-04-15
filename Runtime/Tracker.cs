@@ -17,7 +17,7 @@ namespace Pacmetricas_G01
     [System.Serializable]
     public struct Configuration { public PersistenceType persistenceType; public SerializationType serializationType; }
 
-    public class Tracker : MonoBehaviour
+    public class Tracker
     {
         private static Tracker instance = null;
         private Tracker() { }
@@ -33,21 +33,13 @@ namespace Pacmetricas_G01
 
         public static Tracker GetInstance()
         {
+            if (instance == null)
+                instance = new Tracker();
+            
             return instance;
         }
-
-        private void Awake()
-        {
-            if (instance != null)
-                Destroy(this.gameObject);
-            else
-            {
-                instance = this;
-                Init();
-            }
-        }
-
-        public void Init()
+        
+        public void Init(List<Configuration> persistenceConfiguration)
         {
             activeTrackers = new List<ITrackerAsset>();
             persistences = new List<IPersistence>();
