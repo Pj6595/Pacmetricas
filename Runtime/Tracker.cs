@@ -31,6 +31,8 @@ namespace Pacmetricas_G01
         public int eventQueueSize;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public class Tracker
     {
         private static Tracker instance = null;
@@ -132,6 +134,14 @@ namespace Pacmetricas_G01
                         return;
                     }
                 }
+            }
+        }
+
+        public void FlushAllEvents()
+        {
+            //Metodo para hacer flush de los eventos manualmente
+            foreach (var persistenceElem in persistences) {
+                persistenceElem.Flush();
             }
         }
     }
