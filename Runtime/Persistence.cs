@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Pacmetricas_G01{
 	
-	public abstract class IPersistence{
-		protected int queueSize = 20;
+	public abstract class IPersistence {
+		protected int queueSize;
 		protected Queue<Event> eventQueue = new Queue<Event>(queueSize);
 		protected bool running = true;
 
@@ -23,14 +23,17 @@ namespace Pacmetricas_G01{
 	{
 		private string path;
 
-		public FilePersistence(ISerializer currSerializer){
+		public FilePersistence(ISerializer currSerializer, int queueSize){
 			serializer = currSerializer;
+			this.queueSize = queueSize
 #if UNITY_EDITOR
 			path = Application.dataPath + "/Metricas";
 #else
 			path = Application.persistentDataPath + "/Metricas";
 #endif
-			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+			if (!Directory.Exists(path)) {
+				Directory.CreateDirectory(path);
+			}
 		}
 
 		public override void SendEvent(Event trackerEvent) {
@@ -80,8 +83,9 @@ namespace Pacmetricas_G01{
 	public class ServerPersistence: IPersistence{
 
 		//Server ??? 
-		public ServerPersistence(ISerializer currSerializer){
+		public ServerPersistence(ISerializer currSerializer, int queueSize){
 			serializer = currSerializer;
+			this.queueSize = queueSize;
 		}
 
         public override void Run()

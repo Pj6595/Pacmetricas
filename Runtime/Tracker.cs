@@ -15,7 +15,11 @@ namespace Pacmetricas_G01
         JSON_SERIALIZATION, CSV_SERIALIZATION
     }
     [System.Serializable]
-    public struct Configuration { public PersistenceType persistenceType; public SerializationType serializationType; }
+    public struct Configuration { //Para la creacion del sistema de persistencia
+        public PersistenceType persistenceType;
+        public SerializationType serializationType;
+        public int eventQueueSize;
+    }
 
     public class Tracker
     {
@@ -31,8 +35,7 @@ namespace Pacmetricas_G01
 
         List<Thread> persistenceThreads = new List<Thread>();
 
-        public static Tracker GetInstance()
-        {
+        public static Tracker GetInstance() {
             if (instance == null)
                 instance = new Tracker();
             
@@ -44,8 +47,10 @@ namespace Pacmetricas_G01
             activeTrackers = new List<ITrackerAsset>();
             persistences = new List<IPersistence>();
 
+            //Creacion de distintas persistencias a partir de la lista de configuraciones
             foreach (var configuration in persistenceConfiguration)
             {
+                //Serializador para la persistencia
                 ISerializer serializer;
                 switch (configuration.serializationType)
                 {
@@ -58,19 +63,21 @@ namespace Pacmetricas_G01
                         break;
                 }
 
+                //Persistencia con su serializador y tamanho de cola de eventos
                 IPersistence persistence;
                 switch (configuration.persistenceType)
                 {
                     case PersistenceType.FILE_PERSISTENCE:
                     default:
-                        persistence = new FilePersistence(serializer);
+                        persistence = new FilePersistence(serializer, configuration.queueSize);
                         break;
                     case PersistenceType.SERVER_PERSISTENCE:
-                        persistence = new ServerPersistence(serializer);
+                        persistence = new ServerPersistence(serializer, configuration.queueSize);
                         break;
                 }
                 persistences.Add(persistence);
 
+                //Se crea un hilo para cada persistencia
                 Thread persistenceThread = new Thread(persistence.Run);
                 persistenceThreads.Add(persistenceThread);
                 persistenceThread.Start();
@@ -83,20 +90,23 @@ namespace Pacmetricas_G01
         public void End()
         {
             telemetryActive = false;
-            foreach (IPersistence p in persistences) p.Stop();
+            foreach (IPersistence p in persistences) {
+                p.Stop();
+            }
             foreach (Thread t in persistenceThreads) {
                 Debug.Log("joineado");
-                t.Join(); }
+                t.Join();
+            }
         }
 
         public void TrackEvent(Event e)
         {
-            if (telemetryActive)
-            {
+            //Se pasa el evento e por todos los tracker asset
+            if (telemetryActive) {
                 foreach (var trackerAsset in activeTrackers)
                 {
-                    if (trackerAsset.Accept(e))
-                    {
+                    //Si alguno lo acepta se envia a todas las persistencias
+                    if (trackerAsset.Accept(e)) { 
                         foreach (var persistenceElem in persistences)
                         {
                             persistenceElem.SendEvent(e);

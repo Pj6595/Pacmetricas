@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
-namespace Pacmetricas_G01{
-	public abstract class Event{
+
+namespace Pacmetricas_G01 
+{
+	public abstract class Event {
 		public long gameSession;
 		public long timeStamp;
 		public string type;
@@ -13,12 +15,11 @@ namespace Pacmetricas_G01{
 
 		public abstract string ToJSON();
 		public abstract string ToCSV();
-
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
-	//Eventos simples que solo cuentan con el tipo de evento, el timeStamp y el id de la sesión
-	public class TimeStampEvent: Event{
+	//Eventos simples que solo cuentan con el tipo de evento, el timeStamp y el id de la sesion
+	public class TimeStampEvent: Event {
 		
 		public override string ToJSON(){
 			return JsonUtility.ToJson(this, true);
@@ -29,14 +30,14 @@ namespace Pacmetricas_G01{
 		}
 	}
 
-	public class InitGameEvent: TimeStampEvent{
+	public class InitGameEvent: TimeStampEvent {
 		
 		public InitGameEvent(){
 			type = "INIT_GAME";
 		}
 	}
 
-	public class MenuPassedEvent: TimeStampEvent{
+	public class MenuPassedEvent: TimeStampEvent {
 		
 		public MenuPassedEvent(){
 			type = "MENU_PASSED";
@@ -44,28 +45,28 @@ namespace Pacmetricas_G01{
 
 	}
 
-	public class FirstPhraseEvent: TimeStampEvent{
+	public class FirstPhraseEvent: TimeStampEvent {
 		
 		public FirstPhraseEvent(){
 			type = "FIRST_PHRASE";
 		}
 	}
 
-	public class CorrectDirectionEvent: TimeStampEvent{
+	public class CorrectDirectionEvent: TimeStampEvent {
 		
 		public CorrectDirectionEvent(){
 			type = "CORRECT_DIR";
 		}
 	}
 
-	public class InitRunEvent: TimeStampEvent{
+	public class InitRunEvent: TimeStampEvent {
 		
 		public InitRunEvent(){
 			type = "INIT_RUN";
 		}
 	}
 
-	public class PlayerDeadEvent: TimeStampEvent{
+	public class PlayerDeadEvent: TimeStampEvent {
 		
 		public PlayerDeadEvent(){
 			type = "PLAYER_DEAD";
@@ -73,9 +74,9 @@ namespace Pacmetricas_G01{
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
-	//Eventos que ademas incluyen frases que dice el jugador para intertar hacer alguna accion
+	//Eventos que ademas incluyen frases que dice el jugador para intentar hacer alguna accion
 
-	public class PhraseEvent: Event{
+	public class PhraseEvent: Event {
 		public string phrase;
 		
 		public override string ToJSON(){
@@ -87,49 +88,49 @@ namespace Pacmetricas_G01{
 		}
 	}
 
-	public class PhraseMenuEvent: PhraseEvent{
+	public class PhraseMenuEvent: PhraseEvent {
 		
 		public PhraseMenuEvent(){
 			type = "TRY_PHRASE_MENU";
 			phrase = "";
 		}
 
-		public PhraseMenuEvent(string tryphrase){
+		public PhraseMenuEvent(string tryphrase) {
 			type = "TRY_PHRASE_MENU";
 			phrase = tryphrase;
 		}
 	}
 
 
-	public class PhraseTaxiEvent: PhraseEvent{
+	public class PhraseTaxiEvent: PhraseEvent {
 		
 		public PhraseTaxiEvent(){
 			type = "TRY_PHRASE_TAXI";
 			phrase = "";
 		}
 
-		public PhraseTaxiEvent(string tryphrase){
+		public PhraseTaxiEvent(string tryphrase) {
 			type = "TRY_PHRASE_TAXI";
 			phrase = tryphrase;
 		}
 	}
 
-	public class PhraseBlackoutEvent: PhraseEvent{
+	public class PhraseBlackoutEvent: PhraseEvent {
 		public PhraseBlackoutEvent(){
 			type = "TRY_PHRASE_BLACKOUT";
 			phrase = "";
 		}
 
-		public PhraseBlackoutEvent(string tryphrase){
+		public PhraseBlackoutEvent(string tryphrase) {
 			type = "TRY_PHRASE_BLACKOUT";
 			phrase = tryphrase;
 		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
-	//Estos eventos mandan ademas un valor de 0.0 a 1.0 que indica cierto parámetro del juego
+	//Estos eventos mandan ademas un valor de 0.0 a 1.0 que indica cierto parametro del juego
 
-	public class ValueEvent: Event{
+	public class ValueEvent: Event {
 		protected float value;
 		
 		public override string ToJSON(){
@@ -141,27 +142,27 @@ namespace Pacmetricas_G01{
 		}
 	}
 
-	public class MicrophoneVolume: ValueEvent{
+	public class MicrophoneVolume: ValueEvent {
 		
 		public MicrophoneVolume(){
 			type = "VOLUME_MIC";
 			value = -1.0f; //Usamos -1 como valor por defecto para saber si es erroneo
 		}
 
-		public MicrophoneVolume(float micValue){
+		public MicrophoneVolume(float micValue) {
 			type = "VOLUME_MIC";
 			value = micValue;
 		}
 	}
 
-	public class BlackoutIntensityVolume: ValueEvent{
+	public class BlackoutIntensityVolume: ValueEvent {
 		
 		public BlackoutIntensityVolume(){
 			type = "BLACKOUT_INTENSITY";
 			value = -1.0f; //Usamos -1 como valor por defecto para saber si es erroneo
 		}
 
-		public BlackoutIntensityVolume(float blackoutIntensity){
+		public BlackoutIntensityVolume(float blackoutIntensity) {
 			type = "BLACKOUT_INTENSITY";
 			value = blackoutIntensity;
 		}

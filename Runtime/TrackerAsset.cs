@@ -1,7 +1,5 @@
-namespace Pacmetricas_G01{
-
-	//public enum serializationFormat{ JSON, CSV } //esto es un apunte temporal
-
+namespace Pacmetricas_G01
+{
 	public interface ITrackerAsset{
 		public bool Accept(Event trackerEvent);
 	}

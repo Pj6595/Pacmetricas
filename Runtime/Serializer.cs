@@ -1,7 +1,7 @@
-namespace Pacmetricas_G01{
-	
+namespace Pacmetricas_G01 
+{	
 	public interface ISerializer{
-		public string GetSerializationFormat();
+		public string GetSerializationFormat(); //Devuelve la extension de archivo
 		public void SerializeEvent(Event trackerEvent);
 		public string GetSerialization();
 	}
@@ -10,11 +10,11 @@ namespace Pacmetricas_G01{
 
 		private string serialization ="["; 
 		public string GetSerializationFormat() {return ".json";}
-		public void SerializeEvent(Event trackerEvent){
+		public void SerializeEvent(Event trackerEvent) {
 			serialization += trackerEvent.ToJSON() + ",";
 		}
 
-		public string GetSerialization(){
+		public string GetSerialization() {
 			return serialization.Remove(serialization.Length - 1) + "]";
 		}
 	}
@@ -22,11 +22,11 @@ namespace Pacmetricas_G01{
 	public class CSVSerializer: ISerializer {
 		private string serialization = "TipoEvento,TimeStamp,GameSession,Comando,Valor\n";
 		public string GetSerializationFormat() {return ".csv";} 
-		public void SerializeEvent(Event trackerEvent){
+		public void SerializeEvent(Event trackerEvent) {
 			serialization += trackerEvent.ToCSV();
 		}
 
-		public string GetSerialization(){
+		public string GetSerialization() {
 			return serialization;
 		}
 	}
