@@ -14,10 +14,31 @@ namespace Pacmetricas_G01
     {
         JSON_SERIALIZATION, CSV_SERIALIZATION
     }
+
+    [System.Flags]
+    public enum TrackerAssetType
+    {
+        _NOTHING = 0,
+        INIT_GAME = 1 << 0,
+        END_GAME = 1 << 1,
+        MENU_PASSED = 1 << 2,
+        FIRST_PHRASE = 1 << 3,
+        CORRECT_DIR = 1 << 4,
+        INIT_RUN = 1 << 5,
+        PLAYER_DEAD = 1 << 6,
+        TRY_PHRASE_MENU = 1 << 7,
+        TRY_PHRASE_TAXI = 1 << 8,
+        TRY_PHRASE_BLACKOUT = 1 << 9,
+        VOLUME_MIC = 1 << 10,
+        BLACKOUT_INTENSITY = 1 << 11,
+        _ALL = ~0
+    }
+
     [System.Serializable]
     public struct Configuration { //Para la creacion del sistema de persistencia
         public PersistenceType persistenceType;
         public SerializationType serializationType;
+        public TrackerAssetType enabledEvents;
         public int eventQueueSize;
     }
 
@@ -50,6 +71,8 @@ namespace Pacmetricas_G01
             //Creacion de distintas persistencias a partir de la lista de configuraciones
             foreach (var configuration in persistenceConfiguration)
             {
+                Debug.Log((int)(configuration.enabledEvents));
+
                 //Serializador para la persistencia
                 ISerializer serializer;
                 switch (configuration.serializationType)
