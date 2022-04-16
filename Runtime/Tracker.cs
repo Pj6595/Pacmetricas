@@ -7,7 +7,7 @@ namespace Pacmetricas_G01
     [System.Serializable]
     public enum PersistenceType
     {
-        FILE_PERSISTENCE, FIREBASE_PERSISTENCE
+        FILE_PERSISTENCE, SERVER_PERSISTENCE
     }
     [System.Serializable]
     public enum SerializationType
@@ -40,6 +40,7 @@ namespace Pacmetricas_G01
         public SerializationType serializationType;
         public TrackerAssetType enabledEvents;
         public int eventQueueSize;
+        public string serverURL;
     }
 
     public class Tracker
@@ -94,8 +95,8 @@ namespace Pacmetricas_G01
                     default:
                         persistence = new FilePersistence(serializer, configuration.eventQueueSize);
                         break;
-                    case PersistenceType.FIREBASE_PERSISTENCE:
-                        persistence = new FirebasePersistence(serializer, configuration.eventQueueSize);
+                    case PersistenceType.SERVER_PERSISTENCE:
+                        persistence = new ServerPersistence(serializer, configuration.eventQueueSize, configuration.serverURL);
                         break;
                 }
                 persistences.Add(persistence);

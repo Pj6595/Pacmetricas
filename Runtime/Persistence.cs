@@ -1,6 +1,8 @@
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Net;
+using System.Text;
 
 namespace Pacmetricas_G01{
 	
@@ -67,7 +69,7 @@ namespace Pacmetricas_G01{
 					serializer.SerializeEvent(e);
 				}
 
-				string buffer = serializer.GetSerialization();
+				string buffer = serializer.GetFullSerialization();
 				string filePath = path + "/gs_" + gameSession + serializer.GetSerializationFormat();
 
 				FileStream fs;
@@ -84,14 +86,32 @@ namespace Pacmetricas_G01{
 		}
 	}
 
-	public class FirebasePersistence: IPersistence{
-
-		public FirebasePersistence(ISerializer currSerializer, int queueSize): base(currSerializer, queueSize){
-
+	public class ServerPersistence: IPersistence{
+		private string serverURL;
+		public ServerPersistence(ISerializer currSerializer, int queueSize, string url): base(currSerializer, queueSize){
+			serverURL = url;
 		}
 
 		public override void Flush(){
-			
+            lock (eventQueue)
+            {
+				long gameSession;
+
+				if (eventQueue.Count == 0) return; //Si no hay eventos en la lista, no hace flush
+				else gameSession = eventQueue.Peek().gameSession;
+
+				while (eventQueue.Count != 0)
+				{
+					Event e = eventQueue.Dequeue();
+					string content = serializer.SerializeEvent(e);
+					var request = WebRequest.CreateHttp(serverURL);
+					request.Method = "POST";
+					request.ContentType = "application/json";
+					var buffer = Encoding.UTF8.GetBytes(content);
+					request.ContentLength = buffer.Length;
+					request.GetRequestStream().Write(buffer, 0, buffer.Length);
+				}
+			}
 		}
 	}
 }
