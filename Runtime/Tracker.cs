@@ -7,7 +7,7 @@ namespace Pacmetricas_G01
     [System.Serializable]
     public enum PersistenceType
     {
-        FILE_PERSISTENCE, SERVER_PERSISTENCE
+        FILE_PERSISTENCE, FIREBASE_PERSISTENCE
     }
     [System.Serializable]
     public enum SerializationType
@@ -69,10 +69,10 @@ namespace Pacmetricas_G01
                 {
                     case PersistenceType.FILE_PERSISTENCE:
                     default:
-                        persistence = new FilePersistence(serializer, configuration.queueSize);
+                        persistence = new FilePersistence(serializer, configuration.eventQueueSize);
                         break;
-                    case PersistenceType.SERVER_PERSISTENCE:
-                        persistence = new ServerPersistence(serializer, configuration.queueSize);
+                    case PersistenceType.FIREBASE_PERSISTENCE:
+                        persistence = new FirebasePersistence(serializer, configuration.eventQueueSize);
                         break;
                 }
                 persistences.Add(persistence);
@@ -97,7 +97,9 @@ namespace Pacmetricas_G01
             foreach (Thread t in persistenceThreads) {
                 Debug.Log("joineado");
                 t.Join();
-            }
+            };
+            foreach (IPersistence p in persistences) p.Stop();
+            foreach (Thread t in persistenceThreads) t.Join();
         }
 
         public void TrackEvent(Event e)

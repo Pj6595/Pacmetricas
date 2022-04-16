@@ -37,6 +37,15 @@ namespace Pacmetricas_G01
 		}
 	}
 
+	public class EndGameEvent : TimeStampEvent
+	{
+
+		public EndGameEvent()
+		{
+			type = "END_GAME";
+		}
+	}
+
 	public class MenuPassedEvent: TimeStampEvent {
 		
 		public MenuPassedEvent(){

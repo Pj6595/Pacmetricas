@@ -6,12 +6,33 @@ namespace Pacmetricas_G01{
 	
 	public abstract class IPersistence {
 		protected int queueSize;
-		protected Queue<Event> eventQueue = new Queue<Event>(queueSize);
+		protected Queue<Event> eventQueue;
 		protected bool running = true;
 
 		public ISerializer serializer { get; set; }
-		public abstract void SendEvent(Event trackerEvent);
-		public abstract void Run();
+		public IPersistence(ISerializer currSerializer, int queueSize) {
+			serializer = currSerializer;
+			this.queueSize = queueSize;
+			eventQueue = new Queue<Event>(queueSize);
+		}
+		public void SendEvent(Event trackerEvent)
+        {
+			lock (eventQueue)
+			{ //Se bloquea la cola para incluir un evento 
+				eventQueue.Enqueue(trackerEvent);
+			}
+		}
+		public void Run()
+		{
+			while (running)
+			{
+				if (eventQueue.Count == queueSize)
+				{
+					//La cola de eventos se vacia siempre que esta llena
+					Flush();
+				}
+			}
+		}
 		public void Stop()
         {
 			running = false;
@@ -23,9 +44,7 @@ namespace Pacmetricas_G01{
 	{
 		private string path;
 
-		public FilePersistence(ISerializer currSerializer, int queueSize){
-			serializer = currSerializer;
-			this.queueSize = queueSize
+		public FilePersistence(ISerializer currSerializer, int queueSize): base(currSerializer, queueSize) {
 #if UNITY_EDITOR
 			path = Application.dataPath + "/Metricas";
 #else
@@ -33,21 +52,6 @@ namespace Pacmetricas_G01{
 #endif
 			if (!Directory.Exists(path)) {
 				Directory.CreateDirectory(path);
-			}
-		}
-
-		public override void SendEvent(Event trackerEvent) {
-            lock (eventQueue) { //Se bloquea la cola para incluir un evento 
-				eventQueue.Enqueue(trackerEvent);
-			}
-		}
-
-		public override void Run() {
-            while (running) {
-				if (eventQueue.Count == queueSize) {
-					//La cola de eventos se vacia siempre que esta llena
-					Flush();
-				}
 			}
 		}
 		
@@ -80,22 +84,12 @@ namespace Pacmetricas_G01{
 		}
 	}
 
-	public class ServerPersistence: IPersistence{
+	public class FirebasePersistence: IPersistence{
 
-		//Server ??? 
-		public ServerPersistence(ISerializer currSerializer, int queueSize){
-			serializer = currSerializer;
-			this.queueSize = queueSize;
-		}
-
-        public override void Run()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SendEvent(Event trackerEvent){
+		public FirebasePersistence(ISerializer currSerializer, int queueSize): base(currSerializer, queueSize){
 
 		}
+
 		public override void Flush(){
 			
 		}
