@@ -5,21 +5,18 @@ using UnityEngine;
 namespace Pacmetricas_G01{
 	
 	public abstract class IPersistence{
-		protected Queue<Event> eventList = new Queue<Event>(20);
+		protected int queueSize = 20;
+		protected Queue<Event> eventQueue = new Queue<Event>(queueSize);
 		protected bool running = true;
 
 		public ISerializer serializer { get; set; }
-
 		public abstract void SendEvent(Event trackerEvent);
-
 		public abstract void Run();
-
 		public void Stop()
         {
 			running = false;
         }
-
-		public abstract void Flush(); //asincrona
+		public abstract void Flush(); //Asincrona
 	}
 
 	public class FilePersistence: IPersistence
@@ -36,48 +33,47 @@ namespace Pacmetricas_G01{
 			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 		}
 
-		public override void SendEvent(Event trackerEvent){
-            lock (eventList)
-            {
-				eventList.Enqueue(trackerEvent);
+		public override void SendEvent(Event trackerEvent) {
+            lock (eventQueue) { //Se bloquea la cola para incluir un evento 
+				eventQueue.Enqueue(trackerEvent);
 			}
 		}
 
-		public override void Run()
-        {
-            while (running){
-				lock (eventList)
-				{
-					//TO DO: hacer bien lmao
-					if (eventList.Count >= 1) Flush();
+		public override void Run() {
+            while (running) {
+				if (eventQueue.Count == queueSize) {
+					//La cola de eventos se vacia siempre que esta llena
+					Flush();
 				}
 			}
 		}
 		
 		public override void Flush() {
-			long gameSession;
+			lock (eventQueue) { //Se bloquea la cola para hacer flush sin que se haga enqueue de nuevos eventos
+				long gameSession;
 
-			if(eventList.Count == 0) return; //Si no hay eventos en la lista, no hace flush
-			else gameSession = eventList.Peek().gameSession;
+				if(eventQueue.Count == 0) return; //Si no hay eventos en la lista, no hace flush
+				else gameSession = eventQueue.Peek().gameSession;
 
-			while(eventList.Count != 0) {
-				Event e = eventList.Dequeue();
-				serializer.SerializeEvent(e);
+				while(eventQueue.Count != 0) {
+					Event e = eventQueue.Dequeue();
+					serializer.SerializeEvent(e);
+				}
+
+				string buffer = serializer.GetSerialization();
+				string filePath = path + "/gs_" + gameSession + serializer.GetSerializationFormat();
+
+				FileStream fs;
+				if(File.Exists(filePath))
+					fs = File.Open(filePath, FileMode.Truncate);
+				else 
+					fs = File.Open(filePath, FileMode.Create);
+
+				//Escritura en archivo
+				StreamWriter sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
+				sw.WriteLine(buffer);
+				sw.Close();
 			}
-
-			string buffer = serializer.GetSerialization();
-			string filePath = path + "/gs_" + gameSession + serializer.GetSerializationFormat();
-
-			FileStream fs;
-			if(File.Exists(filePath))
-				fs = File.Open(filePath, FileMode.Truncate);
-			else 
-				fs = File.Open(filePath, FileMode.Create);
-
-			//Escritura en archivo
-			StreamWriter sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
-    		sw.WriteLine(buffer);
-   			sw.Close();
 		}
 	}
 

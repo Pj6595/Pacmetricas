@@ -93,7 +93,6 @@ namespace Pacmetricas_G01
         {
             if (telemetryActive)
             {
-                //Luego será un for each con todas las persistencias que queramos
                 foreach (var trackerAsset in activeTrackers)
                 {
                     if (trackerAsset.Accept(e))
