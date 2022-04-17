@@ -167,7 +167,7 @@ namespace Pacmetricas_G01
 	//Estos eventos mandan ademas un valor de 0.0 a 1.0 que indica cierto parametro del juego
 
 	public class ValueEvent: Event {
-		protected float value;
+		public float value;
 		
 		public override string ToJSON(){
 			return JsonUtility.ToJson(this, true);
