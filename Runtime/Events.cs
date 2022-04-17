@@ -39,7 +39,8 @@ namespace Pacmetricas_G01
 			{ "TRY_PHRASE_TAXI", EventTypes.TRY_PHRASE_TAXI },
 			{ "TRY_PHRASE_BLACKOUT", EventTypes.TRY_PHRASE_BLACKOUT },
 			{ "VOLUME_MIC", EventTypes.VOLUME_MIC },
-			{ "BLACKOUT_INTENSITY", EventTypes.BLACKOUT_INTENSITY }
+			{ "BLACKOUT_INTENSITY", EventTypes.BLACKOUT_INTENSITY },
+			{ "ALL_EVENTS", EventTypes._Everything }
 		};
 	}
 
