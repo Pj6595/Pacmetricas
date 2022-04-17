@@ -30,6 +30,7 @@ namespace Pacmetricas_G01
         public EnabledEventTypes enabledEvents;
         public int eventQueueSize;
         public string serverURL;
+        public string requestContentType;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +91,8 @@ namespace Pacmetricas_G01
                         persistence = new FilePersistence(serializer, configuration.eventQueueSize);
                         break;
                     case PersistenceType.SERVER_PERSISTENCE:
-                        persistence = new ServerPersistence(serializer, configuration.eventQueueSize, configuration.serverURL);
+                        persistence = new ServerPersistence(serializer, configuration.eventQueueSize, 
+                            configuration.serverURL, configuration.requestContentType);
                         break;
                 }
                 persistences.Add(persistence);
