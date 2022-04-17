@@ -84,8 +84,11 @@ namespace Pacmetricas_G01{
 				string filePath = path + "/ts_"+ timeStamp + "gs_" + gameSession + serializer.GetSerializationFormat();
 
 				FileStream fs;
-				fs = File.Open(filePath, FileMode.Create);
-
+				if(File.Exists(filePath))
+					fs = File.Open(filePath, FileMode.Truncate);
+				else 
+					fs = File.Open(filePath, FileMode.Create);
+					
 				//Escritura en archivo
 				StreamWriter sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
 				sw.WriteLine(buffer);
