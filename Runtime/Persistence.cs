@@ -12,10 +12,11 @@ namespace Pacmetricas_G01{
 		protected bool running = true;
 		public EventTypes enabledEvents { get; set; }
 		public ISerializer serializer { get; set; }
-		public IPersistence(ISerializer currSerializer, int queueSize) {
+		public IPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) {
 			serializer = currSerializer;
 			this.queueSize = queueSize;
 			eventQueue = new Queue<Event>(queueSize);
+			this.enabledEvents = enabledEvents;
 		}
 		public void SendEvent(Event trackerEvent)
         {
@@ -52,7 +53,7 @@ namespace Pacmetricas_G01{
 		private string path;
 
 		public FilePersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) :
-			base(currSerializer, queueSize)
+			base(currSerializer, queueSize, enabledEvents)
 		{
 #if UNITY_EDITOR
 			path = Application.dataPath + "/Metricas";
@@ -97,7 +98,7 @@ namespace Pacmetricas_G01{
 		private string serverURL;
 		private string contentType;
 		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, string contentType, EventTypes enabledEvents = EventTypes._Everything) :
-			base(currSerializer, queueSize)
+			base(currSerializer, queueSize, enabledEvents)
 		{
 			serverURL = url;
 			this.contentType = contentType;
