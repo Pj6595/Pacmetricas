@@ -15,19 +15,11 @@ namespace Pacmetricas_G01
         JSON_SERIALIZATION, CSV_SERIALIZATION
     }
 
-    [System.Flags]
-    public enum EnabledEventTypes
-    {
-        _Nothing = 0, _All = ~0,
-        INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, FIRST_PHRASE = 1<<3, CORRECT_DIR = 1<<4, INIT_RUN = 1<<5, PLAYER_DEAD = 1<<6,
-        TRY_PHRASE_MENU = 1<<7, TRY_PHRASE_TAXI = 1<<8, TRY_PHRASE_BLACKOUT = 1<<9, VOLUME_MIC = 1<<10, BLACKOUT_INTENSITY = 1<<11
-    }
-
     [System.Serializable]
     public struct Configuration { //Para la creacion del sistema de persistencia
         public PersistenceType persistenceType;
         public SerializationType serializationType;
-        public EnabledEventTypes enabledEvents;
+        public EventTypes enabledEvents;
         public int eventQueueSize;
         public string serverURL;
     }
@@ -63,11 +55,6 @@ namespace Pacmetricas_G01
             //Creacion de distintas persistencias a partir de la lista de configuraciones
             foreach (var configuration in persistenceConfiguration)
             {
-                // TODO enabledEvents son los eventos que recogemos pero no se si comprobarlo al hacer trackEvent o
-                // desactivar los que no tocan aquí directamente de alguna forma
-                Debug.Log((int)(configuration.enabledEvents));
-
-
                 //Serializador para la persistencia
                 ISerializer serializer;
                 switch (configuration.serializationType)
@@ -87,10 +74,10 @@ namespace Pacmetricas_G01
                 {
                     case PersistenceType.FILE_PERSISTENCE:
                     default:
-                        persistence = new FilePersistence(serializer, configuration.eventQueueSize);
+                        persistence = new FilePersistence(serializer, configuration.eventQueueSize, configuration.enabledEvents);
                         break;
                     case PersistenceType.SERVER_PERSISTENCE:
-                        persistence = new ServerPersistence(serializer, configuration.eventQueueSize, configuration.serverURL);
+                        persistence = new ServerPersistence(serializer, configuration.eventQueueSize, configuration.serverURL, configuration.enabledEvents);
                         break;
                 }
                 persistences.Add(persistence);
