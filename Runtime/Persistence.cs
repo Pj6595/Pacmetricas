@@ -10,18 +10,22 @@ namespace Pacmetricas_G01{
 		protected int queueSize;
 		protected Queue<Event> eventQueue;
 		protected bool running = true;
-
+		public EventTypes enabledEvents { get; set; }
 		public ISerializer serializer { get; set; }
-		public IPersistence(ISerializer currSerializer, int queueSize) {
+		public IPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) {
 			serializer = currSerializer;
 			this.queueSize = queueSize;
 			eventQueue = new Queue<Event>(queueSize);
+			this.enabledEvents = enabledEvents;
 		}
 		public void SendEvent(Event trackerEvent)
         {
-			lock (eventQueue)
-			{ //Se bloquea la cola para incluir un evento 
-				eventQueue.Enqueue(trackerEvent);
+			if((Event.EventIDs[trackerEvent.type] & enabledEvents) != 0)	// yo recojo este evento??
+			{
+				lock (eventQueue)
+				{ //Se bloquea la cola para incluir un evento 
+					eventQueue.Enqueue(trackerEvent);
+				}
 			}
 		}
 		public void Run()
@@ -48,7 +52,9 @@ namespace Pacmetricas_G01{
 	{
 		private string path;
 
-		public FilePersistence(ISerializer currSerializer, int queueSize): base(currSerializer, queueSize) {
+		public FilePersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) :
+			base(currSerializer, queueSize, enabledEvents)
+		{
 #if UNITY_EDITOR
 			path = Application.dataPath + "/Metricas";
 #else
@@ -91,7 +97,9 @@ namespace Pacmetricas_G01{
 	public class ServerPersistence: IPersistence{
 		private string serverURL;
 		private string contentType;
-		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, string contentType): base(currSerializer, queueSize){
+		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, string contentType, EventTypes enabledEvents = EventTypes._Everything) :
+			base(currSerializer, queueSize, enabledEvents)
+		{
 			serverURL = url;
 			this.contentType = contentType;
 		}
