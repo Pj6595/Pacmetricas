@@ -6,13 +6,13 @@ using System.Text;
 
 namespace Pacmetricas_G01{
 	
-	public abstract class IPersistence {
+	public abstract class AbstractPersistence {
 		protected int queueSize;
 		protected Queue<Event> eventQueue;
 		protected bool running = true;
 		public EventTypes enabledEvents { get; set; }
 		public ISerializer serializer { get; set; }
-		public IPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) {
+		public AbstractPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) {
 			serializer = currSerializer;
 			this.queueSize = queueSize;
 			eventQueue = new Queue<Event>(queueSize);
@@ -48,7 +48,7 @@ namespace Pacmetricas_G01{
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public class FilePersistence: IPersistence
+	public class FilePersistence: AbstractPersistence
 	{
 		private string path;
 
@@ -68,9 +68,12 @@ namespace Pacmetricas_G01{
 		public override void Flush() {
 			lock (eventQueue) { //Se bloquea la cola para hacer flush sin que se haga enqueue de nuevos eventos
 				long gameSession;
-
+				long timeStamp;
 				if(eventQueue.Count == 0) return; //Si no hay eventos en la lista, no hace flush
-				else gameSession = eventQueue.Peek().gameSession;
+				else{ 
+					gameSession = eventQueue.Peek().gameSession;
+					timeStamp = eventQueue.Peek().timeStamp;
+				}
 
 				while(eventQueue.Count != 0) {
 					Event e = eventQueue.Dequeue();
@@ -78,13 +81,10 @@ namespace Pacmetricas_G01{
 				}
 
 				string buffer = serializer.GetFullSerialization();
-				string filePath = path + "/gs_" + gameSession + serializer.GetSerializationFormat();
+				string filePath = path + "/ts_"+ timeStamp + "gs_" + gameSession + serializer.GetSerializationFormat();
 
 				FileStream fs;
-				if(File.Exists(filePath))
-					fs = File.Open(filePath, FileMode.Truncate);
-				else 
-					fs = File.Open(filePath, FileMode.Create);
+				fs = File.Open(filePath, FileMode.Create);
 
 				//Escritura en archivo
 				StreamWriter sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
@@ -94,7 +94,7 @@ namespace Pacmetricas_G01{
 		}
 	}
 
-	public class ServerPersistence: IPersistence{
+	public class ServerPersistence: AbstractPersistence{
 		private string serverURL;
 		private string contentType;
 		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, string contentType, EventTypes enabledEvents = EventTypes._Everything) :

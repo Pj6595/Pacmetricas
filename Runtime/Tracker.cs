@@ -35,7 +35,7 @@ namespace Pacmetricas_G01
         [SerializeField]
         public List<Configuration> persistenceConfiguration;
 
-        private List<IPersistence> persistences;
+        private List<AbstractPersistence> persistences;
         private bool telemetryActive = false;
         List<Thread> persistenceThreads = new List<Thread>();
 
@@ -49,7 +49,7 @@ namespace Pacmetricas_G01
 
         public void Init(List<Configuration> persistenceConfiguration, EventTypes eventsEnabled)
         {
-            persistences = new List<IPersistence>();
+            persistences = new List<AbstractPersistence>();
 
             //Creacion de distintas persistencias a partir de la lista de configuraciones
             foreach (var configuration in persistenceConfiguration)
@@ -68,7 +68,7 @@ namespace Pacmetricas_G01
                 }
 
                 //Persistencia con su serializador y tamanho de cola de eventos
-                IPersistence persistence;
+                AbstractPersistence persistence;
                 switch (configuration.persistenceType)
                 {
                     case PersistenceType.FILE_PERSISTENCE:
@@ -94,7 +94,7 @@ namespace Pacmetricas_G01
         public void End()
         {
             telemetryActive = false;
-            foreach (IPersistence p in persistences)
+            foreach (AbstractPersistence p in persistences)
             {
                 p.Flush(); //Hace flush de todos los eventos que queden en la cola antes de cerrarse
                 p.Stop();
@@ -104,7 +104,7 @@ namespace Pacmetricas_G01
                 Debug.Log("joineado");
                 t.Join();
             };
-            foreach (IPersistence p in persistences) p.Stop();
+            foreach (AbstractPersistence p in persistences) p.Stop();
             foreach (Thread t in persistenceThreads) t.Join();
         }
 
