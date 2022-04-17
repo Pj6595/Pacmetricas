@@ -95,10 +95,12 @@ namespace Pacmetricas_G01{
 
 	public class ServerPersistence: IPersistence{
 		private string serverURL;
-		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, EventTypes enabledEvents = EventTypes._Everything) :
+		private string contentType;
+		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, string contentType, EventTypes enabledEvents = EventTypes._Everything) :
 			base(currSerializer, queueSize)
 		{
 			serverURL = url;
+			this.contentType = contentType;
 		}
 
 		public override void Flush(){
@@ -115,7 +117,7 @@ namespace Pacmetricas_G01{
 					string content = serializer.SerializeEvent(e);
 					var request = WebRequest.CreateHttp(serverURL);
 					request.Method = "POST";
-					request.ContentType = "application/json";
+					request.ContentType = contentType;
 					var buffer = Encoding.UTF8.GetBytes(content);
 					request.ContentLength = buffer.Length;
 					request.GetRequestStream().Write(buffer, 0, buffer.Length);
