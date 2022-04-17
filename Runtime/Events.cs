@@ -1,8 +1,18 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Pacmetricas_G01 
 {
+
+
+    [System.Flags]
+    public enum EventTypes {
+		_None = 0, _Everything = ~0,
+        INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, FIRST_PHRASE = 1<<3, CORRECT_DIR = 1<<4, INIT_RUN = 1<<5, PLAYER_DEAD = 1<<6,
+        TRY_PHRASE_MENU = 1<<7, TRY_PHRASE_TAXI = 1<<8, TRY_PHRASE_BLACKOUT = 1<<9, VOLUME_MIC = 1<<10, BLACKOUT_INTENSITY = 1<<11
+    }
+
 	public abstract class Event {
 		public long gameSession;
 		public long timeStamp;
@@ -15,21 +25,11 @@ namespace Pacmetricas_G01
 
 		public abstract string ToJSON();
 		public abstract string ToCSV();
-	}
-
-
-    [System.Flags]
-    public enum EventTypes
-    {
-		_None = 0, _All = ~0,
-        INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, FIRST_PHRASE = 1<<3, CORRECT_DIR = 1<<4, INIT_RUN = 1<<5, PLAYER_DEAD = 1<<6,
-        TRY_PHRASE_MENU = 1<<7, TRY_PHRASE_TAXI = 1<<8, TRY_PHRASE_BLACKOUT = 1<<9, VOLUME_MIC = 1<<10, BLACKOUT_INTENSITY = 1<<11
-    }
-
-	public static Dictionary <string, EventTypes> EventIDs = new Dictionary<string, EventTypes>()
-        {
-            { "INIT_GAME", EventTypes.INIT_GAME },
-            { "END_GAME", EventTypes.END_GAME },
+			
+		public static Dictionary <string, EventTypes> EventIDs = new Dictionary<string, EventTypes>()
+		{
+			{ "INIT_GAME", EventTypes.INIT_GAME },
+			{ "END_GAME", EventTypes.END_GAME },
 			{ "MENU_PASSED", EventTypes.MENU_PASSED },
 			{ "FIRST_PHRASE", EventTypes.FIRST_PHRASE },
 			{ "CORRECT_DIR", EventTypes.CORRECT_DIR },
@@ -41,6 +41,7 @@ namespace Pacmetricas_G01
 			{ "VOLUME_MIC", EventTypes.VOLUME_MIC },
 			{ "BLACKOUT_INTENSITY", EventTypes.BLACKOUT_INTENSITY }
 		};
+	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//Eventos simples que solo cuentan con el tipo de evento, el timeStamp y el id de la sesion

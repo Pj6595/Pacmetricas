@@ -19,7 +19,7 @@ namespace Pacmetricas_G01{
 		}
 		public void SendEvent(Event trackerEvent)
         {
-			if(EventIDs[trackerEvent.type] & enabledEvents)	// yo recojo este evento??
+			if((Event.EventIDs[trackerEvent.type] & enabledEvents) != 0)	// yo recojo este evento??
 			{
 				lock (eventQueue)
 				{ //Se bloquea la cola para incluir un evento 
@@ -51,7 +51,7 @@ namespace Pacmetricas_G01{
 	{
 		private string path;
 
-		public FilePersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._All) :
+		public FilePersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) :
 			base(currSerializer, queueSize)
 		{
 #if UNITY_EDITOR
@@ -95,7 +95,7 @@ namespace Pacmetricas_G01{
 
 	public class ServerPersistence: IPersistence{
 		private string serverURL;
-		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, EventTypes enabledEvents = EventTypes._All) :
+		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, EventTypes enabledEvents = EventTypes._Everything) :
 			base(currSerializer, queueSize)
 		{
 			serverURL = url;
