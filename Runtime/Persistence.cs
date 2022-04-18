@@ -7,10 +7,13 @@ using System.Text;
 namespace Pacmetricas_G01{
 	public interface IPersistence
     {
-
+		public abstract void SendEvent(Event TrackerEvent);
+		public abstract void Run();
+		public abstract void Stop();
+		public abstract void Flush();
     }
 	
-	public abstract class AbstractPersistence {
+	public abstract class AbstractPersistence: IPersistence {
 		protected int queueSize;
 		protected Queue<Event> eventQueue;
 		protected bool running = true;
@@ -112,7 +115,7 @@ namespace Pacmetricas_G01{
 	public class ServerPersistence: AbstractPersistence{
 		private string serverURL;
 		private string contentType;
-		private List<RequestHeader> header;
+		private List<RequestHeader> header = null;
 
 		public ServerPersistence(ISerializer currSerializer, int queueSize, 
 			string url, string contentType, List<RequestHeader> header, EventTypes enabledEvents = EventTypes.ALL_EVENTS) :
