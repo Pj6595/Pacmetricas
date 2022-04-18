@@ -20,22 +20,25 @@ namespace Pacmetricas_G01{
 		protected bool flushFlag = false;
 		public EventTypes enabledEvents { get; set; }
 		public ISerializer serializer { get; set; }
+
 		public AbstractPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes.ALL_EVENTS) {
 			serializer = currSerializer;
 			this.queueSize = queueSize;
 			eventQueue = new Queue<Event>(queueSize);
 			this.enabledEvents = enabledEvents;
 		}
+
 		public void SendEvent(Event trackerEvent)
         {
-			if((Event.EventIDs[trackerEvent.type] & enabledEvents) != 0)	// yo recojo este evento??
+			if((Event.EventIDs[trackerEvent.type] & enabledEvents) != 0) //Yo recojo este evento??
 			{
 				lock (eventQueue)
-				{ //Se bloquea la cola para incluir un evento 
+				{	//Se bloquea la cola para incluir un evento 
 					eventQueue.Enqueue(trackerEvent);
 				}
 			}
 		}
+
 		public void Run()
 		{
 			while (running)
@@ -48,11 +51,13 @@ namespace Pacmetricas_G01{
 				}
 			}
 		}
+
 		public void Stop()
         {
 			running = false;
 			_Flush();
         }
+
 		public void Flush()
 		{
 			flushFlag = true;
@@ -62,7 +67,7 @@ namespace Pacmetricas_G01{
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	//Persistencia para archivos
 	public class FilePersistence: AbstractPersistence
 	{
 		private string path;
@@ -80,7 +85,8 @@ namespace Pacmetricas_G01{
 			}
 		}
 		
-		protected override void _Flush() {
+		protected override void _Flush()
+		{
 			lock (eventQueue) { //Se bloquea la cola para hacer flush sin que se haga enqueue de nuevos eventos
 				long gameSession;
 				long timeStamp;
@@ -112,6 +118,8 @@ namespace Pacmetricas_G01{
 		}
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Persistencia para servidor
 	public class ServerPersistence: AbstractPersistence{
 		private string serverURL;
 		private string contentType;
@@ -128,7 +136,7 @@ namespace Pacmetricas_G01{
 
 		protected override void _Flush(){
 			string buffer = "";
-			lock (eventQueue)
+			lock (eventQueue) //Se bloquea la cola para hacer flush sin que se haga enqueue de nuevos eventos
 			{
 				long gameSession;
 

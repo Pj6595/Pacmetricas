@@ -15,9 +15,10 @@ namespace Pacmetricas_G01
         JSON_SERIALIZATION, CSV_SERIALIZATION
     }
 
+    //Para la creacion del sistema de persistencia
     [System.Serializable]
     public struct Configuration
-    { //Para la creacion del sistema de persistencia
+    { 
         public PersistenceType persistenceType;
         public SerializationType serializationType;
         public int eventQueueSize;
@@ -57,17 +58,6 @@ namespace Pacmetricas_G01
 
         public void Init(List<Configuration> persistenceConfiguration, EventTypes eventsEnabled)
         {
-            //HttpWebRequest request = null;
-            //request = WebRequest.CreateHttp("http://uaj.fdi.ucm.es/c2122/telemetry/grupo01");
-            //request.Headers.Add("x-api-key: 6de9f470716a7395bc3ff0dbbf64352f");
-            ////request.Headers.Add("x-api-key", "6de9f470716a7395bc3ff0dbbf64352f");
-            //request.Method = "POST";
-            //request.ContentType = "application/json";
-            //var buffer = Encoding.UTF8.GetBytes("[{\"timestamp\": \"69696969\",\"phrase\": \"bbbbb\"},{\"timestamp\": \"420420420\",\"value\": 0.666]");
-            //request.ContentLength = buffer.Length;
-            //request.GetRequestStream().Write(buffer, 0, buffer.Length);
-            //var response = (HttpWebResponse)request.GetResponse();
-
             persistences = new List<IPersistence>();
 
             //Creacion de distintas persistencias a partir de la lista de configuraciones
@@ -110,6 +100,7 @@ namespace Pacmetricas_G01
             telemetryActive = true;
         }
 
+        //Cerrar el tracker
         public void End()
         {
             telemetryActive = false;
@@ -136,10 +127,10 @@ namespace Pacmetricas_G01
             }
 
         }
-
+        
+        //Metodo para hacer flush de los eventos manualmente
         public void FlushAllEvents()
         {
-            //Metodo para hacer flush de los eventos manualmente
             foreach (var persistenceElem in persistences)
             {
                 persistenceElem.Flush();

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace Pacmetricas_G01 
 {
-
-
     [System.Flags]
     public enum EventTypes {
 		NONE = 0, ALL_EVENTS = ~0,
@@ -25,7 +23,7 @@ namespace Pacmetricas_G01
 
 		public abstract string ToJSON();
 		public abstract string ToCSV();
-			
+		
 		public static Dictionary <string, EventTypes> EventIDs = new Dictionary<string, EventTypes>()
 		{
 			{ "INIT_GAME", EventTypes.INIT_GAME },

@@ -7,6 +7,7 @@ namespace Pacmetricas_G01
 		public void FlushSerialization();
 	}
 
+	//Serializador para un archivo de formato .json
 	public class JSONSerializer: ISerializer {
 		private string serialization =""; 
 		public string GetSerializationFormat() {return ".json";}
@@ -25,6 +26,7 @@ namespace Pacmetricas_G01
 		}
 	}
 
+	//Serializador para un archivo de formato .csv
 	public class CSVSerializer: ISerializer {
 		private string serialization = "TipoEvento,TimeStamp,GameSession,Comando,Valor\n";
 		public string GetSerializationFormat() {return ".csv";} 
