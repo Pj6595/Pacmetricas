@@ -6,10 +6,20 @@ namespace Pacmetricas_G01
 {
     [System.Flags]
     public enum EventTypes {
-		NONE = 0, ALL_EVENTS = ~0,
-        INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, CORRECT_DIR = 1<<3, INIT_RUN = 1<<4, PLAYER_DEAD = 1<<5,
-        TRY_PHRASE_MENU = 1<<6, TRY_PHRASE_TAXI = 1<<7, DIRECTION_TAXI = 1<<8, VOLUME_MIC = 1<<9, BLACKOUT_INTENSITY = 1<<10,
-		PLAYER_WON = 1<<11, COMMAND_MENU = 1<<12
+		NONE = 0,
+		ALL_EVENTS = ~0,
+        INIT_GAME = 1<<0,
+		END_GAME = 1<<1,
+		MENU_PASSED = 1<<2,
+		INIT_RUN = 1<<3,
+		PLAYER_DEAD = 1<<4,
+        TRY_PHRASE_MENU = 1<<5,
+		TRY_PHRASE_TAXI = 1<<6,
+		DIRECTION_TAXI = 1<<7,
+		VOLUME_MIC = 1<<8,
+		BLACKOUT_INTENSITY = 1<<9,
+		PLAYER_WON = 1<<10,
+		COMMAND_MENU = 1<<11
     }
 
 	public abstract class Event {
@@ -30,7 +40,6 @@ namespace Pacmetricas_G01
 			{ "INIT_GAME", EventTypes.INIT_GAME },
 			{ "END_GAME", EventTypes.END_GAME },
 			{ "MENU_PASSED", EventTypes.MENU_PASSED },
-			{ "CORRECT_DIR", EventTypes.CORRECT_DIR },
 			{ "INIT_RUN", EventTypes.INIT_RUN },
 			{ "PLAYER_DEAD", EventTypes.PLAYER_DEAD },
 			{ "PLAYER_WON", EventTypes.PLAYER_WON },
@@ -79,13 +88,6 @@ namespace Pacmetricas_G01
 			type = "MENU_PASSED";
 		}
 
-	}
-
-	public class CorrectDirectionEvent: TimeStampEvent {
-		
-		public CorrectDirectionEvent(){
-			type = "CORRECT_DIR";
-		}
 	}
 
 	public class InitRunEvent: TimeStampEvent {
