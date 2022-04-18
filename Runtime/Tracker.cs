@@ -118,12 +118,9 @@ namespace Pacmetricas_G01
             telemetryActive = false;
             foreach (AbstractPersistence p in persistences)
             {
-                p.Flush(); //Hace flush de todos los eventos que queden en la cola antes de cerrarse
                 p.Stop();
             }
-            foreach (Thread t in persistenceThreads)
-            {
-                Debug.Log("joineado");
+            foreach (Thread t in persistenceThreads){
                 t.Join();
             };
             foreach (AbstractPersistence p in persistences) p.Stop();

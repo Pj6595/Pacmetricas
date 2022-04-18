@@ -5,14 +5,19 @@ using System.Net;
 using System.Text;
 
 namespace Pacmetricas_G01{
+	public interface IPersistence
+    {
+
+    }
 	
 	public abstract class AbstractPersistence {
 		protected int queueSize;
 		protected Queue<Event> eventQueue;
 		protected bool running = true;
+		protected bool flushFlag = false;
 		public EventTypes enabledEvents { get; set; }
 		public ISerializer serializer { get; set; }
-		public AbstractPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) {
+		public AbstractPersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes.ALL_EVENTS) {
 			serializer = currSerializer;
 			this.queueSize = queueSize;
 			eventQueue = new Queue<Event>(queueSize);
@@ -32,18 +37,25 @@ namespace Pacmetricas_G01{
 		{
 			while (running)
 			{
-				if (eventQueue.Count == queueSize)
+				if (eventQueue.Count == queueSize || flushFlag)
 				{
 					//La cola de eventos se vacia siempre que esta llena
-					Flush();
+					_Flush();
+					flushFlag = false;
 				}
 			}
 		}
 		public void Stop()
         {
 			running = false;
+			_Flush();
         }
-		public abstract void Flush(); //Asincrona
+		public void Flush()
+		{
+			flushFlag = true;
+		}
+
+		protected abstract void _Flush();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +64,7 @@ namespace Pacmetricas_G01{
 	{
 		private string path;
 
-		public FilePersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes._Everything) :
+		public FilePersistence(ISerializer currSerializer, int queueSize, EventTypes enabledEvents = EventTypes.ALL_EVENTS) :
 			base(currSerializer, queueSize, enabledEvents)
 		{
 #if UNITY_EDITOR
@@ -65,7 +77,7 @@ namespace Pacmetricas_G01{
 			}
 		}
 		
-		public override void Flush() {
+		protected override void _Flush() {
 			lock (eventQueue) { //Se bloquea la cola para hacer flush sin que se haga enqueue de nuevos eventos
 				long gameSession;
 				long timeStamp;
@@ -103,7 +115,7 @@ namespace Pacmetricas_G01{
 		private List<RequestHeader> header;
 
 		public ServerPersistence(ISerializer currSerializer, int queueSize, 
-			string url, string contentType, List<RequestHeader> header, EventTypes enabledEvents = EventTypes._Everything) :
+			string url, string contentType, List<RequestHeader> header, EventTypes enabledEvents = EventTypes.ALL_EVENTS) :
 			base(currSerializer, queueSize, enabledEvents)
 		{
 			serverURL = url;
@@ -111,9 +123,10 @@ namespace Pacmetricas_G01{
 			this.header = header;
 		}
 
-		public override void Flush(){
-            lock (eventQueue)
-            {
+		protected override void _Flush(){
+			string buffer = "";
+			lock (eventQueue)
+			{
 				long gameSession;
 
 				if (eventQueue.Count == 0) return; //Si no hay eventos en la lista, no hace flush
@@ -124,17 +137,18 @@ namespace Pacmetricas_G01{
 					Event e = eventQueue.Dequeue();
 					serializer.SerializeEvent(e);
 				}
-
-				var request = WebRequest.CreateHttp(serverURL);
-				if (header != null)
-					foreach (RequestHeader h in header) request.Headers.Add(h.key + ": " + h.value);
-				request.Method = "POST";
-				request.ContentType = contentType;
-				var buffer = Encoding.UTF8.GetBytes(serializer.GetFullSerialization());
-				request.ContentLength = buffer.Length;
-				request.GetRequestStream().Write(buffer, 0, buffer.Length);
+				buffer = serializer.GetFullSerialization();
 				serializer.FlushSerialization();
 			}
+
+			var request = WebRequest.CreateHttp(serverURL);
+			if (header != null)
+				foreach (RequestHeader h in header) request.Headers.Add(h.key + ": " + h.value);
+			request.Method = "POST";
+			request.ContentType = contentType;
+			var requestBuffer = Encoding.UTF8.GetBytes(buffer);
+			request.ContentLength = requestBuffer.Length;
+			request.GetRequestStream().Write(requestBuffer, 0, buffer.Length);
 		}
 	}
 }

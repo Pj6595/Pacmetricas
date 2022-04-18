@@ -8,7 +8,7 @@ namespace Pacmetricas_G01
 
     [System.Flags]
     public enum EventTypes {
-		_None = 0, _Everything = ~0,
+		NONE = 0, ALL_EVENTS = ~0,
         INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, FIRST_PHRASE = 1<<3, CORRECT_DIR = 1<<4, INIT_RUN = 1<<5, PLAYER_DEAD = 1<<6,
         TRY_PHRASE_MENU = 1<<7, TRY_PHRASE_TAXI = 1<<8, TRY_PHRASE_BLACKOUT = 1<<9, VOLUME_MIC = 1<<10, BLACKOUT_INTENSITY = 1<<11
     }
@@ -40,7 +40,7 @@ namespace Pacmetricas_G01
 			{ "TRY_PHRASE_BLACKOUT", EventTypes.TRY_PHRASE_BLACKOUT },
 			{ "VOLUME_MIC", EventTypes.VOLUME_MIC },
 			{ "BLACKOUT_INTENSITY", EventTypes.BLACKOUT_INTENSITY },
-			{ "ALL_EVENTS", EventTypes._Everything }
+			{ "ALL_EVENTS", EventTypes.ALL_EVENTS }
 		};
 	}
 
