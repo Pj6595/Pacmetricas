@@ -8,7 +8,8 @@ namespace Pacmetricas_G01
     public enum EventTypes {
 		NONE = 0, ALL_EVENTS = ~0,
         INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, CORRECT_DIR = 1<<3, INIT_RUN = 1<<4, PLAYER_DEAD = 1<<5,
-        TRY_PHRASE_MENU = 1<<6, TRY_PHRASE_TAXI = 1<<7, DIRECTION_TAXI = 1<<8, VOLUME_MIC = 1<<9, BLACKOUT_INTENSITY = 1<<10, PLAYER_WON = 1<<11
+        TRY_PHRASE_MENU = 1<<6, TRY_PHRASE_TAXI = 1<<7, DIRECTION_TAXI = 1<<8, VOLUME_MIC = 1<<9, BLACKOUT_INTENSITY = 1<<10,
+		PLAYER_WON = 1<<11, COMMAND_MENU = 1<<12
     }
 
 	public abstract class Event {
@@ -35,6 +36,7 @@ namespace Pacmetricas_G01
 			{ "PLAYER_WON", EventTypes.PLAYER_WON },
 			{ "TRY_PHRASE_MENU", EventTypes.TRY_PHRASE_MENU },
 			{ "TRY_PHRASE_TAXI", EventTypes.TRY_PHRASE_TAXI },
+			{ "COMMAND_MENU", EventTypes.COMMAND_MENU },
 			{ "DIRECTION_TAXI", EventTypes.DIRECTION_TAXI },
 			{ "VOLUME_MIC", EventTypes.VOLUME_MIC },
 			{ "BLACKOUT_INTENSITY", EventTypes.BLACKOUT_INTENSITY },
@@ -137,6 +139,17 @@ namespace Pacmetricas_G01
 		}
 	}
 
+	public class CommandMenuEvent: PhraseEvent {
+		public CommandMenuEvent(){
+			type = "COMMAND_MENU";
+			phrase = "";
+		}
+
+		public CommandMenuEvent(string tryphrase) {
+			type = "COMMAND_MENU";
+			phrase = tryphrase;
+		}
+	}
 
 	public class PhraseTaxiEvent: PhraseEvent {
 		
