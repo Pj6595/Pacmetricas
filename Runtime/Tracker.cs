@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-using System.Text;
-using System.Net;
-
 namespace Pacmetricas_G01
 {
     [System.Serializable]
