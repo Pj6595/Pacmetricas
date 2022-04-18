@@ -102,7 +102,7 @@ namespace Pacmetricas_G01{
 				}
 
 				string buffer = serializer.GetFullSerialization();
-				string filePath = path + "gs_" + gameSession + serializer.GetSerializationFormat();
+				string filePath = path + "\gs_" + gameSession + serializer.GetSerializationFormat();
 
 				FileStream fs;
 				if(File.Exists(filePath))
