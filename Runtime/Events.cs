@@ -7,8 +7,8 @@ namespace Pacmetricas_G01
     [System.Flags]
     public enum EventTypes {
 		NONE = 0, ALL_EVENTS = ~0,
-        INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, FIRST_PHRASE = 1<<3, CORRECT_DIR = 1<<4, INIT_RUN = 1<<5, PLAYER_DEAD = 1<<6,
-        TRY_PHRASE_MENU = 1<<7, TRY_PHRASE_TAXI = 1<<8, DIRECTION_TAXI = 1<<9, VOLUME_MIC = 1<<10, BLACKOUT_INTENSITY = 1<<11, PLAYER_WON = 1<<12
+        INIT_GAME = 1<<0, END_GAME = 1<<1, MENU_PASSED = 1<<2, CORRECT_DIR = 1<<3, INIT_RUN = 1<<4, PLAYER_DEAD = 1<<5,
+        TRY_PHRASE_MENU = 1<<6, TRY_PHRASE_TAXI = 1<<7, DIRECTION_TAXI = 1<<8, VOLUME_MIC = 1<<9, BLACKOUT_INTENSITY = 1<<10, PLAYER_WON = 1<<11
     }
 
 	public abstract class Event {
@@ -29,7 +29,6 @@ namespace Pacmetricas_G01
 			{ "INIT_GAME", EventTypes.INIT_GAME },
 			{ "END_GAME", EventTypes.END_GAME },
 			{ "MENU_PASSED", EventTypes.MENU_PASSED },
-			{ "FIRST_PHRASE", EventTypes.FIRST_PHRASE },
 			{ "CORRECT_DIR", EventTypes.CORRECT_DIR },
 			{ "INIT_RUN", EventTypes.INIT_RUN },
 			{ "PLAYER_DEAD", EventTypes.PLAYER_DEAD },
@@ -78,13 +77,6 @@ namespace Pacmetricas_G01
 			type = "MENU_PASSED";
 		}
 
-	}
-
-	public class FirstPhraseEvent: TimeStampEvent {
-		
-		public FirstPhraseEvent(){
-			type = "FIRST_PHRASE";
-		}
 	}
 
 	public class CorrectDirectionEvent: TimeStampEvent {
