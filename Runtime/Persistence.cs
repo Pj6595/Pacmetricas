@@ -100,11 +100,15 @@ namespace Pacmetricas_G01{
 	public class ServerPersistence: AbstractPersistence{
 		private string serverURL;
 		private string contentType;
-		public ServerPersistence(ISerializer currSerializer, int queueSize, string url, string contentType, EventTypes enabledEvents = EventTypes._Everything) :
+		private List<RequestHeader> header;
+
+		public ServerPersistence(ISerializer currSerializer, int queueSize, 
+			string url, string contentType, List<RequestHeader> header, EventTypes enabledEvents = EventTypes._Everything) :
 			base(currSerializer, queueSize, enabledEvents)
 		{
 			serverURL = url;
 			this.contentType = contentType;
+			this.header = header;
 		}
 
 		public override void Flush(){
@@ -118,14 +122,18 @@ namespace Pacmetricas_G01{
 				while (eventQueue.Count != 0)
 				{
 					Event e = eventQueue.Dequeue();
-					string content = serializer.SerializeEvent(e);
-					var request = WebRequest.CreateHttp(serverURL);
-					request.Method = "POST";
-					request.ContentType = contentType;
-					var buffer = Encoding.UTF8.GetBytes(content);
-					request.ContentLength = buffer.Length;
-					request.GetRequestStream().Write(buffer, 0, buffer.Length);
+					serializer.SerializeEvent(e);
 				}
+
+				var request = WebRequest.CreateHttp(serverURL);
+				if (header != null)
+					foreach (RequestHeader h in header) request.Headers.Add(h.key + ": " + h.value);
+				request.Method = "POST";
+				request.ContentType = contentType;
+				var buffer = Encoding.UTF8.GetBytes(serializer.GetFullSerialization());
+				request.ContentLength = buffer.Length;
+				request.GetRequestStream().Write(buffer, 0, buffer.Length);
+				serializer.FlushSerialization();
 			}
 		}
 	}

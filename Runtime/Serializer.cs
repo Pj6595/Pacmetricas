@@ -4,6 +4,7 @@ namespace Pacmetricas_G01
 		public string GetSerializationFormat(); //Devuelve la extension de archivo
 		public string SerializeEvent(Event trackerEvent);
 		public string GetFullSerialization();
+		public void FlushSerialization();
 	}
 
 	public class JSONSerializer: ISerializer {
@@ -18,6 +19,10 @@ namespace Pacmetricas_G01
 		public string GetFullSerialization() {
 			return "[" + serialization.Remove(serialization.Length - 1) + "]";
 		}
+
+		public void FlushSerialization() {
+			serialization = "";
+		}
 	}
 
 	public class CSVSerializer: ISerializer {
@@ -31,6 +36,10 @@ namespace Pacmetricas_G01
 
 		public string GetFullSerialization() {
 			return serialization;
+		}
+		public void FlushSerialization()
+        {
+			serialization = "TipoEvento,TimeStamp,GameSession,Comando,Valor\n";
 		}
 	}
 }

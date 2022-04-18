@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
+using System.Text;
+using System.Net;
+
 namespace Pacmetricas_G01
 {
     [System.Serializable]
@@ -23,6 +26,14 @@ namespace Pacmetricas_G01
         public int eventQueueSize;
         public string serverURL;
         public string requestContentType;
+        public List<RequestHeader> requestHeader;
+    }
+
+    [System.Serializable]
+    public struct RequestHeader
+    {
+        public string key;
+        public string value;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +60,17 @@ namespace Pacmetricas_G01
 
         public void Init(List<Configuration> persistenceConfiguration, EventTypes eventsEnabled)
         {
+            //HttpWebRequest request = null;
+            //request = WebRequest.CreateHttp("http://uaj.fdi.ucm.es/c2122/telemetry/grupo01");
+            //request.Headers.Add("x-api-key: 6de9f470716a7395bc3ff0dbbf64352f");
+            ////request.Headers.Add("x-api-key", "6de9f470716a7395bc3ff0dbbf64352f");
+            //request.Method = "POST";
+            //request.ContentType = "application/json";
+            //var buffer = Encoding.UTF8.GetBytes("[{\"timestamp\": \"69696969\",\"phrase\": \"bbbbb\"},{\"timestamp\": \"420420420\",\"value\": 0.666]");
+            //request.ContentLength = buffer.Length;
+            //request.GetRequestStream().Write(buffer, 0, buffer.Length);
+            //var response = (HttpWebResponse)request.GetResponse();
+
             persistences = new List<AbstractPersistence>();
 
             //Creacion de distintas persistencias a partir de la lista de configuraciones
@@ -77,7 +99,7 @@ namespace Pacmetricas_G01
                         break;
                     case PersistenceType.SERVER_PERSISTENCE:
                         persistence = new ServerPersistence(serializer, configuration.eventQueueSize,
-                            configuration.serverURL, configuration.requestContentType, eventsEnabled);
+                            configuration.serverURL, configuration.requestContentType, configuration.requestHeader, eventsEnabled);
                         break;
                 }
                 persistences.Add(persistence);
